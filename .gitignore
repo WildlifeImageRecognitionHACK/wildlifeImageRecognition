@@ -260,3 +260,7 @@ paket-files/
 __pycache__/
 *.pyc
 /wildlife_backend_hack/env
+
+/wildlife_backend_hack/static
+/wildlife_backend_hack/templates
+
