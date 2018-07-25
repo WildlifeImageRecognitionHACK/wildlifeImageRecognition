@@ -28,7 +28,6 @@ def return_image():
     s = s[:-1]
     s = s.replace("'", '"')
     s += "}"
-
     return jsonify(s)
 
 
