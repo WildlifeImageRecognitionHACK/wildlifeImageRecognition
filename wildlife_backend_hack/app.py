@@ -4,19 +4,14 @@ It contains the definition of routes and views for the application.
 """
 
 from flask import Flask, jsonify, render_template
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 #"C:\\repo\\wlir_web_ui\\wlir_web_ui\\dist"
 from pymongo import MongoClient
+import json
 import pprint
 
-
-def connect_database():
-    client = MongoClient()
-    db = client['wirDB']
-    table = db['userLabels']
-    result = table.find()
-    return result
-
+client = MongoClient()
+db = client['wirDB']
 
 tasks = [
     {
@@ -39,21 +34,33 @@ wsgi_app = app.wsgi_app
 
 @app.route('/wir/api/get', methods=['GET'])
 def get_tasks():
-    client = MongoClient()
-    db = client['wirDB']
     table = db['userLabels2']
-    result = table.find()
+    result = db.list_collection_names()
+    
     return jsonify({'results': tasks})
 
 @app.route('/api')
 def return_api():
-    return jsonify({'result': tasks})
-
+    imageTable = db['organizations']
+    result = imageTable.find()
+    s = "{"
+    for res in result:
+        s += str(res) + ","
+    s = s[:-1]
+    s = s.replace("'", '"')
+    s += "}"
+    print(s)
+    #json_res = json.loads(s)
+    #pprint(json_res)
+    #images = {}
+    #for i in range(result.count())
+     #   images[i] =
+    return jsonify(s)
 
 
 @app.route('/')
 def welcome():
-    return render_template('index.html')
+    return app.send_static_file('index.html')
 
     
 
@@ -64,7 +71,4 @@ if __name__ == '__main__':
         PORT = int(os.environ.get('SERVER_PORT', '8080'))
     except ValueError:
         PORT = 8080
-    connect_database()
-    print("blabla")
-    print("root folder web: ", app.instance_path)
-    app.run(HOST, PORT)
+    app.run('0.0.0.0', PORT)
